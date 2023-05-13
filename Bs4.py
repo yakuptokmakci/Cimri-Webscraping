@@ -1,36 +1,38 @@
-from selenium import webdriver
-from selenium.webdriver.common.by import By
-link="https://www.cimri.com/dizustu-bilgisayar/en-ucuz-lenovo-n4120-128-gb-4-gb-ram-notebook-fiyatlari,2088029188"
+link_Cimri="https://www.cimri.com/cep-telefonlari/en-ucuz-apple-iphone-11-128gb-akilli-cep-telefonu-fiyatlari,a331840845"
 def Cimri(link):
-    store_links=[]
-    store_prices=[]
-    store_names=[]
-    condition=0
-    driver = webdriver.Chrome()
+    store_prices = []
+    store_names = []
+    store_scores = []
+    store_sites=[]
+    alttext=[]
 
     driver.get(link)
-    xpath_expression = '//div[contains(@class, "s17f9cy4-19") and contains(@class, "heJchT")]//img'
-    elements = driver.find_elements(By.XPATH, xpath_expression)
-    alt_texts = [element.get_attribute("alt") for element in elements]
-    search_item="https://"
 
-    for alt_text in alt_texts:
-            if search_item in alt_text:
-                store_links.append(alt_text)
-
-    prices=driver.find_elements("xpath","//div[contains(@class,'s17f9cy4-11 gkkxYN')]")
+    prices=driver.find_elements("xpath","//div[contains(@class,'s17f9cy4-19 heJchT')]//div[contains(@class,'s17f9cy4-11 gkkxYN')]")
     for price in prices:
         store_prices.append(price.get_attribute("innerHTML"))
 
-    names=driver.find_elements("xpath","//div[contains(@class,'s17f9cy4-25 gufRKu')]//span[@title]")
+    names=driver.find_elements("xpath","//div[contains(@class,'s17f9cy4-23 jFfEpu')]//span")
+    images=driver.find_elements("xpath","//div[contains(@class, 's17f9cy4-23 jFfEpu')]//img")
+    xpath_query = '//div[contains(concat(" ", normalize-space(@class), " "), "s17f9cy4-23") and contains(concat(" ", normalize-space(@class), " "), "jFfEpu")]'
+    div_elements = driver.find_elements(By.XPATH,xpath_query)
+    for image in images:
+            store_sites.append(image.get_attribute("alt"))
 
-    for name in names:
-        store_names.append(name.get_attribute("innerHTML"))
+    for div in div_elements:
+        span_element = div.find_elements("xpath",".//span")
+        if span_element:
+            # Span etiketi varsa, title özelliğini alıp listeye ekleyin
+            store_names.append(span_element[0].get_attribute("title"))
+        else:
+            # Span etiketi yoksa, "-" karakterini listeye ekleyin
+            store_names.append("-")
 
-    for x in range (len(store_links)):
-        print(store_links[x] ,store_prices[x])
-    driver.quit()
+    # Sonuçları yazdırın
 
-Cimri(link)
+    for x in range (len(store_prices)):
+        print(store_sites[x],store_names[x],store_prices[x])
 
 
+
+Cimri(link_Cimri)
